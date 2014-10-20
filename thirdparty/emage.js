@@ -19715,11 +19715,11 @@ define('src/histogram',['require','qtek','shaders/histogram.essl'],function(requ
         this._imageChanged = true;
     }
 
-    Histogram.prototype.update = function(){
+    Histogram.prototype.update = function(image){
 
         var _gl = this.renderer.gl;
 
-        var image = this.image;
+        if (!image) image = this.image;
         canvas.width = image.width * this.downSample;
         canvas.height = image.height * this.downSample;
 

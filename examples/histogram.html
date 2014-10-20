@@ -6,21 +6,28 @@
     </head>
     <body style="margin:0px">
         <script type="text/javascript">
-            var img = new Image();
-            var histogram = new emage.Histogram(img);
+            var prefix = "file_upload/";
+            var arr = [
+                'image.jpg'
+                ,'t1.jpg'
+                ,'t2.jpg'
+            ];
+            
+            var histogram = new emage.Histogram();
             histogram.downSample = 1/8;
-            img.onload = function(){
-                //console.profile("update1")
-                histogram.update();
-                //console.profileEnd("update1")
-                // It will return a UnitArray(256) which store the histogram of red channel
-                //var redChannel = histogram.channels.red;
-                // And other channels
-                //var blueChannel = histogram.channels.blue;
-                //var luminanceChannel = histogram.channels.luminance;
-                console.log("histogram: ", histogram.channels);
-            }
-            img.src = "file_upload/t1.jpg";
+            arr.map(function(src) {
+                var img = new Image(),
+                    name = "histogram_" + src;
+
+                //img.crossOrigin = 'anonymous';
+                img.onload = function(){
+                    console.profile(name);
+                    histogram.update(img);
+                    console.profileEnd(name);
+                    console.log(name + ": ", JSON.parse(JSON.stringify(histogram.channels)));
+                }
+                img.src = prefix + src;
+            });
         </script>
     </body>
 </html>
