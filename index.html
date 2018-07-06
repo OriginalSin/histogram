@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+		<style>
+			body {
+				margin: 0px;
+			}
+			.image {
+				max-width: 300px;
+			}
+		</style>
+
+        <script src="thirdparty/emage.js"></script>
+    </head>
+    <body>
+		<div class="cont">
+			<input type="file" accept="" class="addPhotoButton">
+			<div class="cont">
+				<img class="image" />
+			</div>
+			<div class="res">
+			</div>
+		</div>
+
+	
+        <script type="text/javascript">
+            var inpButton = document.getElementsByClassName('addPhotoButton')[0],
+				res = document.getElementsByClassName('res')[0],
+				img = document.getElementsByClassName('image')[0],
+				fName;
+
+			inpButton.onchange = function (e) {
+				var file = e.target.files[0];
+				var reader = new FileReader();
+				reader.onload = function (e) {
+					fName = file.name;
+					img.src = e.target.result;
+				};
+				reader.readAsDataURL(file);
+			};
+            var histogram = new emage.Histogram();
+            histogram.downSample = 1/8;
+			img.onload = function(){
+					// console.profile(fName);
+				histogram.update(img);
+					// console.profileEnd(fName);
+				var channels = histogram.channels;
+					console.log(fName + ": ", channels);
+				res.innerHTML = '' +
+					'\n red: ' + JSON.stringify(channels.red) +
+					'\n blue: ' + JSON.stringify(channels.blue) +
+					'\n green: ' + JSON.stringify(channels.green) +
+					'\n luminance: ' + JSON.stringify(channels.luminance);
+			}
+        </script>
+    </body>
+</html>
