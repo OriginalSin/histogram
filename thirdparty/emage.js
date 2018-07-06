@@ -19669,17 +19669,19 @@ define('src/histogram',['require','qtek','shaders/histogram.essl'],function(requ
         });
 
         this.channels = {
-            red : new Uint8Array(256),
-            green : new Uint8Array(256),
-            blue : new Uint8Array(256),
-            luminance : new Uint8Array(256)
+            red : new Uint8Array(256)
+			// ,
+            // green : new Uint8Array(256),
+            // blue : new Uint8Array(256),
+            // luminance : new Uint8Array(256)
         };
 
         this._pixels = {
-            red : new Uint8Array(256*4),
-            green : new Uint8Array(256*4),
-            blue : new Uint8Array(256*4),
-            luminance : new Uint8Array(256*4)
+            red : new Uint8Array(256*4)
+			// ,
+            // green : new Uint8Array(256*4),
+            // blue : new Uint8Array(256*4),
+            // luminance : new Uint8Array(256*4)
         };
 
         var _gl = this.renderer.gl;
@@ -19689,26 +19691,44 @@ define('src/histogram',['require','qtek','shaders/histogram.essl'],function(requ
             depthBuffer : false
         });
         this._textureRed = new qtek3d.texture.Texture2D(texParams);
-        this._textureBlue = new qtek3d.texture.Texture2D(texParams);
-        this._textureGreen = new qtek3d.texture.Texture2D(texParams);
-        this._textureLuminance = new qtek3d.texture.Texture2D(texParams);
+        // this._textureBlue = new qtek3d.texture.Texture2D(texParams);
+        // this._textureGreen = new qtek3d.texture.Texture2D(texParams);
+        // this._textureLuminance = new qtek3d.texture.Texture2D(texParams);
 
         this._shaderRed = new qtek3d.Shader({
-            vertex : Shader.source("emage.histogram_r.vertex"),
-            fragment : Shader.source("emage.histogram.fragment")
+            vertex : '\
+attribute vec4 position;\
+varying lowp vec3 colorFactor;\
+void main()\
+{\
+    colorFactor = vec3(1.0, 0.0, 0.0);\
+    gl_Position = vec4(-1.0 + position.x * 0.0078125, 0.0, 0.0, 1.0);\
+    gl_PointSize = 1.0;\
+}\
+',
+            fragment : '\
+const lowp float scalingFactor = 1.0 / 256.0;\
+varying lowp vec3 colorFactor;\
+void main()\
+{\
+    gl_FragColor = vec4(colorFactor * scalingFactor, 1.0);\
+}\
+'
+            // vertex : Shader.source("emage.histogram_r.vertex"),
+            // fragment : Shader.source("emage.histogram.fragment")
         });
-        this._shaderGreen = new qtek3d.Shader({
-            vertex : Shader.source("emage.histogram_g.vertex"),
-            fragment : Shader.source("emage.histogram.fragment")
-        });
-        this._shaderBlue = new qtek3d.Shader({
-            vertex : Shader.source("emage.histogram_b.vertex"),
-            fragment : Shader.source("emage.histogram.fragment")
-        });
-        this._shaderLuminance = new qtek3d.Shader({
-            vertex : Shader.source("emage.histogram_l.vertex"),
-            fragment : Shader.source("emage.histogram.fragment")
-        });
+        // this._shaderGreen = new qtek3d.Shader({
+            // vertex : Shader.source("emage.histogram_g.vertex"),
+            // fragment : Shader.source("emage.histogram.fragment")
+        // });
+        // this._shaderBlue = new qtek3d.Shader({
+            // vertex : Shader.source("emage.histogram_b.vertex"),
+            // fragment : Shader.source("emage.histogram.fragment")
+        // });
+        // this._shaderLuminance = new qtek3d.Shader({
+            // vertex : Shader.source("emage.histogram_l.vertex"),
+            // fragment : Shader.source("emage.histogram.fragment")
+        // });
 
         this._buffer = _gl.createBuffer();
 
@@ -19747,7 +19767,7 @@ define('src/histogram',['require','qtek','shaders/histogram.essl'],function(requ
         _gl.drawArrays( _gl.POINT, 0, size );
         // Read back
         _gl.readPixels(0, 0, 256, 1, _gl.RGBA, _gl.UNSIGNED_BYTE, this._pixels.red);
-
+/*
         // Green Channel
         _gl.clear(_gl.COLOR_BUFFER_BIT);
         this._shaderGreen.bind(_gl);
@@ -19771,12 +19791,12 @@ define('src/histogram',['require','qtek','shaders/histogram.essl'],function(requ
         this._framBuffer.bind(this.renderer);
         _gl.drawArrays( _gl.POINT, 0, size );
         _gl.readPixels(0, 0, 256, 1, _gl.RGBA, _gl.UNSIGNED_BYTE, this._pixels.luminance);
-
+*/
         for(var i = 0; i < 256; i++){
             this.channels.red[i] = this._pixels.red[i*4];
-            this.channels.green[i] = this._pixels.green[i*4+1];
-            this.channels.blue[i] = this._pixels.blue[i*4+2];
-            this.channels.luminance[i] = this._pixels.luminance[i*4];
+            // this.channels.green[i] = this._pixels.green[i*4+1];
+            // this.channels.blue[i] = this._pixels.blue[i*4+2];
+            // this.channels.luminance[i] = this._pixels.luminance[i*4];
         }
 
         _gl.disable(_gl.BLEND);
